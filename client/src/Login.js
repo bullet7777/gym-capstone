@@ -35,15 +35,21 @@ const Login = ({ loginUser }) => {
 
     return (
         <div style={{
-            background: `url('/gym_login_background.jpg')`
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundImage: `url('/gym_login_background.jpg')`
         }}>
             <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
+
+
                 <Grid.Column style={{ maxWidth: 450 }} textAlign='left'>
-                    <Header as='h2' color='blue' textAlign='center'>
-                        Log-in to your account
+               
+                    <Header as='h2' color='yellow' textAlign='center'>
+                        Welcome to Gym Central
                     </Header>
                     <Form onSubmit={handleSubmit} error={error !== ""}>
                         <Segment stacked>
+
                             <Form.Input fluid icon='user'
                                 iconPosition='left'
                                 placeholder='Username'
