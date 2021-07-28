@@ -1,7 +1,5 @@
 class UsersController < ApplicationController
     def create #signup customer user
-        user_params.is_admin = false;
-        user_params.is_owner = false;
         user=User.create(user_params)
         if user.valid?
             session[:user_id] = user.id
