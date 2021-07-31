@@ -6,6 +6,8 @@ import Navbar from './Navbar';
 import Login from './Login';
 import Signup from './Signup';
 import Dashboard from './Dashboard';
+import Payments from './Payments';
+import Packages from './Packages';
 
 
 
@@ -22,6 +24,7 @@ function App() {
             .then(u => {
               setLoggedIn(true)
               setUser(u)
+              history.push('/')
             })
         } else {
           history.push('/login')
@@ -52,7 +55,9 @@ function App() {
       <Switch>
         <Route exact path="/signup" render={routerProps => <Signup {...routerProps} loginUser={loginUser} />} />
         <Route exact path="/login" render={routerProps => <Login {...routerProps} loginUser={loginUser} />} />
-        <Route exact path='/' render={routerProps => <Dashboard {...routerProps} loggedIn={loggedIn} loginUser={loginUser} />}></Route>
+        <Route exact path='/' render={routerProps => <Dashboard {...routerProps} loggedIn={loggedIn} user={user} />}></Route>
+        <Route exact path='/payments' render={routerProps => <Payments {...routerProps} loggedIn={loggedIn} user={user} />}></Route>
+        <Route exact path='/packages' render={routerProps => <Packages {...routerProps} loggedIn={loggedIn} user={user} />}></Route>
       </Switch>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
     Container,
     Dropdown,
@@ -21,6 +21,23 @@ const Navbar = (props) => {
                     <NavLink to="/">
                         <Menu.Item as='a'>Home</Menu.Item>
                     </NavLink>
+                    <NavLink to="/payments">
+                        <Menu.Item as='a'>Payments</Menu.Item>
+                    </NavLink>
+                    {
+                        props.user.is_admin || props.user.is_owner ?
+                            <NavLink to="/packages">
+                                <Menu.Item as='a'>Packages</Menu.Item>
+                            </NavLink> 
+                            : null
+                    }
+                    {
+                        props.user.is_admin || props.user.is_owner ?
+                            <NavLink to="/users">
+                                <Menu.Item as='a'>Users</Menu.Item>
+                            </NavLink> 
+                            : null
+                    }
                     <Menu.Item position='right' fitted='false'>
                         <Dropdown item simple text={nameText} position='right'>
                             <Dropdown.Menu>

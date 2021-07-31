@@ -7,3 +7,5 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 owner = User.create([{name:'Chris',password:'12345',password_confirmation:'12345',is_owner:true}, {name:'Pat', password:'Pat',password_confirmation:'Pat', is_admin:true}])
+
+package= Package.create(name:'Boxing', price:50, class_limit:10, start_date:DateTime.new(2021,7,28,17),end_date:DateTime.new(2021,8,28,17))
