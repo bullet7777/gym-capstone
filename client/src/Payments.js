@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom';
 import { Container, Table,Header,Icon} from 'semantic-ui-react'
-const Payments = ({ loggedIn, user }) => {
+
+
+
+
+const Payments = ({ loggedIn, user,setError }) => {
     const history = useHistory()
     const [payments, setPayments] = useState([])
     if (!loggedIn) {
@@ -9,21 +13,19 @@ const Payments = ({ loggedIn, user }) => {
     }
     useEffect(() => {
         fetch(`/payments`)
+        .then(r => r.json())
             .then(r => {
-                if (r.ok) {
-                    r.json()
-                        .then(u => {
-                            setPayments(u)
-                        })
+                if (r.errors) {
+                    setError(r)
                 } else {
-
+                    setPayments(r)
                 }
             })
     }, [])
     return (
         <Container style={{ paddingTop: '5em' }}>
                <Header as='h2'>
-            <Icon name='calendar check outline' />
+            <Icon name='payment' />
             <Header.Content>
                 Payments
                 <Header.Subheader></Header.Subheader>

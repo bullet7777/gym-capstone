@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom';
-import { Container, Header, Icon, Item, Button, Modal, Table } from 'semantic-ui-react';
-const Dashboard = ({ loggedIn, user }) => {
+import { Container, Header, Icon, Item, Button, Table } from 'semantic-ui-react';
+
+
+
+const Dashboard = ({ loggedIn, setError, user }) => {
     const history = useHistory()
     const [packages, setPackages] = useState([])
     const [userPackages, setUserPackages] = useState([])
-    const [showModal, setShowModal] = useState(false)
-    const [error, setError] = useState('')
 
 
     if (!loggedIn) {
@@ -15,26 +16,23 @@ const Dashboard = ({ loggedIn, user }) => {
 
     const updatePackages = () => {
         fetch(`/users/packages`)
+            .then(r => r.json())
             .then(r => {
-                if (r.ok) {
-                    r.json()
-                        .then(u => {
-                            setUserPackages(u)
-                        })
+                console.log(r)
+                if (r.errors) {
+                    setError(r)
                 } else {
-
+                    setUserPackages(r)
                 }
             })
 
         fetch(`/packages`)
+            .then(r => r.json())
             .then(r => {
-                if (r.ok) {
-                    r.json()
-                        .then(u => {
-                            setPackages(u)
-                        })
+                if (r.errors) {
+                    setError(r)
                 } else {
-
+                    setPackages(r)
                 }
             })
     }
@@ -52,59 +50,51 @@ const Dashboard = ({ loggedIn, user }) => {
         })
             .then(r => r.json())
             .then(r => {
-                if (r.ok) {
-                    updatePackages()
+                if (r.errors) {
+                    setError(r)
+
                 } else {
-                    setShowModal(true)
-                    setError(r.errors.map(u => u))
+                    updatePackages()
+
                 }
             })
 
     }
     return (<Container style={{ paddingTop: '5em' }}>
-        <Modal
-            open={showModal}
-            header='Error'
-            content={error}
-            onClose={() => setShowModal(false)}
-            actions={[{ key: 'done', content: 'Done' }]}
-        />
+        {user.is_owner || user.is_admin ? null
+            :
+            <div>
+                <Header as='h2'>
+                    <Icon name='calendar check outline' />
+                    <Header.Content>
+                        Enrolled Classes
+                        <Header.Subheader></Header.Subheader>
+                    </Header.Content>
 
-        <Header as='h2'>
-            <Icon name='calendar check outline' />
-            <Header.Content>
-                Enrolled Classes
-                <Header.Subheader></Header.Subheader>
-            </Header.Content>
+                </Header>
+                {userPackages.length === 0 ? "No Classes Enrolled" :
+                    <Table celled structured>
 
-        </Header>
-        {userPackages.length === 0 ? "No Classes Enrolled" :
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell rowSpan='2'>Class Name</Table.HeaderCell>
+                                <Table.HeaderCell rowSpan='2'>Price</Table.HeaderCell>
 
+                            </Table.Row>
+                        </Table.Header>
 
+                        {userPackages.map(p => <Table.Body>
+                            <Table.Row>
 
-
-            <Table celled structured>
-
-                <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell rowSpan='2'>Class Name</Table.HeaderCell>
-                        <Table.HeaderCell rowSpan='2'>Price</Table.HeaderCell>
-
-                    </Table.Row>
-                </Table.Header>
-
-                {userPackages.map(p => <Table.Body>
-                    <Table.Row>
-
-                        <Table.Cell>{p.name}</Table.Cell>
+                                <Table.Cell>{p.name}</Table.Cell>
 
 
-                        <Table.Cell>$ {p.price}</Table.Cell>
+                                <Table.Cell>$ {p.price}</Table.Cell>
 
-                    </Table.Row>
-                </Table.Body>
-                )}</Table>
-        }
+                            </Table.Row>
+                        </Table.Body>
+                        )}</Table>
+                }</div>}
 
         <Header as='h2'>
             <Icon name='calendar check' />
@@ -117,33 +107,27 @@ const Dashboard = ({ loggedIn, user }) => {
         <div>
             {packages.length === 0 ? "No Classes to Enroll in" :
                 <Item.Group>
+                    <Table celled structured>
 
-                    {
-                        packages.map(p => {
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell rowSpan='2'>Class Name</Table.HeaderCell>
+                                <Table.HeaderCell rowSpan='2'>Price</Table.HeaderCell>
+                                <Table.HeaderCell rowSpan='2'>Class Limit</Table.HeaderCell>
+                                <Table.HeaderCell rowSpan='2'>Buy Class</Table.HeaderCell>
 
-                            const isEnrolled = userPackages.find(up => up.id === p.id) !== undefined
-                            const isFullClass = p.users.length === p.class_limit
-                            console.log(isEnrolled)
-                            return (
+                            </Table.Row>
+                        </Table.Header>
+                        {
+                            packages.map(p => {
 
-                                <Table celled structured>
-
-                                    <Table.Header>
+                                const isEnrolled = userPackages.find(up => up.id === p.id) !== undefined
+                                const isFullClass = p.users.length === p.class_limit
+                                console.log(isEnrolled)
+                                return (
+                                    <Table.Body>
                                         <Table.Row>
-                                            <Table.HeaderCell rowSpan='2'>Class Name</Table.HeaderCell>
-                                            <Table.HeaderCell rowSpan='2'>Price</Table.HeaderCell>
-                                            <Table.HeaderCell rowSpan='2'>Class Limit</Table.HeaderCell>
-                                            <Table.HeaderCell rowSpan='2'>Buy Class</Table.HeaderCell>
-
-                                        </Table.Row>
-                                    </Table.Header>
-
-                                    {packages.map(p => <Table.Body>
-                                        <Table.Row>
-
                                             <Table.Cell>{p.name}</Table.Cell>
-
-
                                             <Table.Cell>$ {p.price}</Table.Cell>
                                             <Table.Cell> <span className='stay'>{p.users.length}</span> / <span className='stay'>{p.class_limit}</span></Table.Cell>
                                             <Table.Cell> <Button disabled={isEnrolled || isFullClass} onClick={() => enroll(p.id)} animated='vertical'>
@@ -154,17 +138,31 @@ const Dashboard = ({ loggedIn, user }) => {
                                             </Button></Table.Cell>
                                         </Table.Row>
                                     </Table.Body>
-                                    )}</Table>
 
-                            )
-                        })
-                    }
+
+                                )
+                            })
+                        }</Table>
 
 
                 </Item.Group>
 
             }
+
         </div>
+        {user.is_owner || user.is_admin ?
+            <Header as='h2'>
+                <Icon name='dollar sign' />
+                <Header.Content>
+                    Total Earnings: {packages.reduce((acc, p) => {
+                        return acc += p.price * p.users.length
+                    }, 0)}
+
+                </Header.Content>
+
+            </Header>
+
+            : null}
     </Container>)
 }
 

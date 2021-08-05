@@ -27,13 +27,13 @@ const Signup = ({ loginUser }) => {
             })
                 .then(r => r.json())
                 .then(data => {
-                    if (!data.errors) {
-                        loginUser(data)
-                    } else {
+                    if (data.errors) {
                         setPassword("")
                         setPasswordConfirmation("")
                         const errorLis = data.errors.map(e => <li>{e}</li>)
                         setErrorsList(errorLis)
+                    } else {
+                        loginUser(data) 
                     }
                 })
         }
@@ -42,11 +42,15 @@ const Signup = ({ loginUser }) => {
 
     }
 
-    return (
+    return ( <div style={{
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: `url('/gym_login_background.jpg')`
+    }}>
 
         <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
             <Grid.Column style={{ maxWidth: 450 }} textAlign='left' >
-                <Header as='h2' color='teal' textAlign='center'>
+                <Header as='h2' color='yellow' textAlign='center'>
                     Sign up to a new account
                 </Header>
                 <Form onSubmit={handleSubmit} error={errorsList.length !== 0} >
@@ -78,7 +82,7 @@ const Signup = ({ loginUser }) => {
                             value={passwordConfirmation}
                             onChange={(e) => setPasswordConfirmation(e.target.value)}
                         />
-                        <Button color='teal' fluid size='large' type='submit'>Submit</Button>
+                        <Button color='blue' fluid size='large' type='submit'>Submit</Button>
                     </Segment>
                     <Message
 
@@ -96,6 +100,7 @@ const Signup = ({ loginUser }) => {
                 </Message>
             </Grid.Column>
         </Grid>
+        </div>
     )
 }
 
